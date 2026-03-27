@@ -7,8 +7,9 @@ const CONFIG = {
   // ✏️ Fecha y hora del evento (año, mes-1, día, hora, minuto)
   eventDate: new Date(2025, 6, 19, 20, 30, 0),
 
-  // ✏️ URL del webhook de n8n para el RSVP
-  webhookURL: 'https://TU_URL_DE_WEBHOOK_DE_N8N_AQUÍ',
+  // ✏️ URL del Google Apps Script (ver instrucciones en la planilla Excel)
+  // Ejemplo: 'https://script.google.com/macros/s/XXXXX/exec'
+  GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxYhGN0EG2MdaJG7bUxaKBdwZh7sycmcTqopazaF17U7MetoG6Ih26yQIupnKhQVMzK/exec',
 
   // ✏️ URL pública de un archivo MP3 para música de fondo
   audioURL: 'https://www.bensound.com/bensound-music/bensound-romantik.mp3',
@@ -608,33 +609,47 @@ function initRSVP() {
     submitBtn.disabled = true;
 
     const payload = {
-      nombre: name, asistencia: attending,
-      cantidad_personas: attending === 'si' ? parseInt(guests) : 0,
+      nombre:                  name,
+      asistencia:              attending,
+      cantidad_personas:       attending === 'si' ? parseInt(guests) : 0,
       preferencia_alimenticia: attending === 'si' ? food : 'N/A',
-      mensaje: message, timestamp: new Date().toISOString(),
-      evento: 'XV Años Valentina'
+      mensaje:                 message,
+      dispositivo:             /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+      timestamp:               new Date().toISOString(),
     };
 
-    try {
-      if (!CONFIG.webhookURL.includes('TU_URL')) {
-        await fetch(CONFIG.webhookURL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      } else {
+    // ── Función de envío: intenta Google Sheets, si no está configurado simula éxito ──
+    async function enviarASheets(data) {
+      const url = CONFIG.GOOGLE_SCRIPT_URL;
+      if (!url || url.includes('PEGAR_URL')) {
+        // Modo demo: simula delay sin enviar datos
         await new Promise(res => setTimeout(res, 1000));
+        return;
       }
-      form.style.display = 'none';
+      // Google Apps Script requiere no-cors porque devuelve redirect
+      await fetch(url, {
+        method:  'POST',
+        mode:    'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(data),
+      });
+    }
+
+    try {
+      await enviarASheets(payload);
+
+      // ── Éxito ──
+      form.style.display   = 'none';
       successEl.style.display = 'block';
       successMsg.textContent = attending === 'si'
         ? `¡Genial, ${name}! 🎉 Estamos felices de que vengas. ¡Te esperamos el 19 de julio!`
         : `Gracias por avisarnos, ${name}. Te vamos a extrañar mucho. ¡Pronto nos vemos!`;
       successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
     } catch {
       submitBtn.classList.remove('btn-loading');
       submitBtn.disabled = false;
-      alert('Hubo un problema al enviar. Por favor intentá de nuevo.');
+      alert('Hubo un problema al enviar. Por favor intentá de nuevo más tarde.');
     }
   });
 }

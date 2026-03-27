@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Panel · Valentina</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<style>
+/* ═══════════════════════════════════════════
+   VARIABLES
+   ═══════════════════════════════════════════ */
+:root {
+  --rosa:        #c9a99a;
+  --rosa-dark:   #b08878;
+  --rosa-light:  #f2e0da;
+  --rosa-bg:     #fdf0ed;
+  --dorado:      #c9a96e;
+  --dorado-light:#f0e0c0;
+  --text:        #2c2420;
+  --text-mid:    #6b5b53;
+  --text-light:  #a89490;
+  --bg:          #faf8f5;
+  --bg-light:    #f5f0eb;
+  --white:       #ffffff;
+  --border:      rgba(201,169,154,0.25);
+  --shadow:      0 4px 32px rgba(44,36,32,0.08);
+  --verde:       #5a9a6a;
+  --verde-bg:    #eaf4ed;
+  --rojo:        #c0504d;
+  --rojo-bg:     #faeaea;
+  --radius:      20px;
+  --transition:  0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100svh;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   PANTALLA DE CONTRASEÑA
+   ═══════════════════════════════════════════ */
+#lock-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(135deg, #1a0f0b 0%, #2d1710 60%, #1a0c09 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+
+.lock-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(201,169,110,0.2);
+  border-radius: 28px;
+  padding: 48px 36px;
+  width: 100%; max-width: 400px;
+  text-align: center;
+  backdrop-filter: blur(20px);
+}
+
+.lock-icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--rosa-dark), var(--dorado));
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 24px;
+  font-size: 28px; color: white;
+  animation: lockPulse 2s ease-in-out infinite;
+}
+@keyframes lockPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(201,169,110,0.4); }
+  50%      { box-shadow: 0 0 0 16px rgba(201,169,110,0); }
+}
+
+.lock-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px; font-weight: 400;
+  color: white; margin-bottom: 4px;
+  background: linear-gradient(135deg, #fff 30%, #c9a96e 70%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.lock-sub {
+  font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); margin-bottom: 36px;
+}
+
+.lock-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: rgba(201,169,110,0.8);
+  display: block; margin-bottom: 12px;
+}
+
+.lock-input {
+  width: 100%; padding: 16px 20px;
+  background: rgba(255,255,255,0.08);
+  border: 1.5px solid rgba(201,169,154,0.3);
+  border-radius: 14px;
+  font-family: 'Lato', sans-serif;
+  font-size: 20px; font-weight: 700;
+  color: white; text-align: center;
+  letter-spacing: 8px;
+  outline: none; transition: var(--transition);
+  margin-bottom: 16px;
+}
+.lock-input::placeholder { letter-spacing: 4px; font-size: 14px; color: rgba(255,255,255,0.3); }
+.lock-input:focus { border-color: var(--dorado); background: rgba(255,255,255,0.12); }
+
+.lock-btn {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--rosa-dark), var(--dorado));
+  border: none; border-radius: 100px;
+  font-family: 'Lato', sans-serif;
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: white; cursor: pointer;
+  transition: var(--transition);
+}
+.lock-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,169,110,0.4); }
+
+.lock-error {
+  font-size: 13px; color: #f48a8a;
+  margin-top: 12px; min-height: 20px;
+  animation: shake 0.4s ease;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%      { transform: translateX(-8px); }
+  75%      { transform: translateX(8px); }
+}
+
+#lock-screen.hidden { display: none; }
+
+/* ═══════════════════════════════════════════
+   PANEL PRINCIPAL
+   ═══════════════════════════════════════════ */
+#panel { display: none; }
+#panel.visible { display: block; }
+
+/* ── Header ── */
+.panel-header {
+  background: linear-gradient(135deg, #1a0f0b 0%, #2d1710 100%);
+  padding: 28px 20px 24px;
+  text-align: center;
+  position: relative;
+}
+
+.panel-header-ornament {
+  font-size: 10px; letter-spacing: 12px;
+  color: var(--dorado); opacity: 0.7;
+  display: block; margin-bottom: 12px;
+}
+
+.panel-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 8vw, 42px);
+  font-weight: 400; color: white;
+  background: linear-gradient(135deg, #fff 30%, #c9a96e 70%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+
+.panel-subtitle {
+  font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+}
+
+/* Status bar */
+.status-bar {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; margin-top: 16px;
+}
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #6bcb77;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+@keyframes statusPulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.8); }
+}
+.status-text {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(255,255,255,0.5);
+}
+#last-update { color: rgba(201,169,110,0.7); }
+
+/* ── Nav tabs ── */
+.panel-nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  display: flex; overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 16px rgba(44,36,32,0.06);
+}
+.panel-nav::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+  flex: 1; min-width: 80px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+  padding: 14px 8px;
+  border: none; background: transparent;
+  font-family: 'Lato', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-light); cursor: pointer;
+  transition: var(--transition);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.nav-tab i { font-size: 18px; }
+.nav-tab.active { color: var(--rosa-dark); border-bottom-color: var(--dorado); }
+.nav-tab:hover:not(.active) { color: var(--text-mid); background: var(--bg); }
+
+/* ── Secciones ── */
+.panel-section { display: none; padding: 24px 16px; max-width: 640px; margin: 0 auto; }
+.panel-section.active { display: block; }
+
+/* ═══════════════════════════════════════════
+   SECCIÓN: CONTADOR
+   ═══════════════════════════════════════════ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 16px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+.stat-card:hover { transform: translateY(-3px); }
+.stat-card.full { grid-column: 1 / -1; }
+.stat-card.verde { border-color: rgba(90,154,106,0.3); background: var(--verde-bg); }
+.stat-card.rojo  { border-color: rgba(192,80,77,0.3);  background: var(--rojo-bg); }
+.stat-card.dorado { border-color: rgba(201,169,110,0.4); background: var(--dorado-light); }
+.stat-card.rosa  { border-color: rgba(201,169,154,0.4); background: var(--rosa-light); }
+
+.stat-icon { font-size: 28px; display: block; margin-bottom: 8px; }
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 48px; font-weight: 500; line-height: 1;
+  display: block; margin-bottom: 4px;
+  transition: var(--transition);
+}
+.verde .stat-num { color: var(--verde); }
+.rojo .stat-num  { color: var(--rojo); }
+.dorado .stat-num { color: #8a6a30; }
+.rosa .stat-num  { color: var(--rosa-dark); }
+
+.stat-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-light);
+}
+
+/* Barra de progreso */
+.progress-bar-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.progress-label {
+  display: flex; justify-content: space-between;
+  font-size: 12px; font-weight: 700; color: var(--text-mid);
+  margin-bottom: 10px; letter-spacing: 1px;
+}
+.progress-track {
+  height: 10px; border-radius: 100px;
+  background: var(--rojo-bg);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 100px;
+  background: linear-gradient(90deg, var(--verde), #8fd49f);
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  width: 0%;
+}
+
+/* ─ Menús ─ */
+.menus-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 10px; margin-top: 20px;
+}
+.menu-chip {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 8px; text-align: center;
+  box-shadow: var(--shadow);
+}
+.menu-chip .icon { font-size: 22px; display: block; margin-bottom: 4px; }
+.menu-chip .num  { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--rosa-dark); display: block; }
+.menu-chip .lbl  { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-light); }
+
+/* ═══════════════════════════════════════════
+   SECCIÓN: ASISTENTES
+   ═══════════════════════════════════════════ */
+.filter-bar {
+  display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 8px 16px; border-radius: 100px;
+  border: 1.5px solid var(--border);
+  background: var(--white); font-family: 'Lato', sans-serif;
+  font-size: 12px; font-weight: 700; color: var(--text-mid);
+  cursor: pointer; transition: var(--transition);
+  letter-spacing: 0.5px;
+}
+.filter-btn.active {
+  background: linear-gradient(135deg, var(--rosa-dark), var(--dorado));
+  border-color: transparent; color: white;
+}
+
+.guests-list { display: flex; flex-direction: column; gap: 10px; }
+
+.guest-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow); transition: var(--transition);
+  animation: cardIn 0.4s ease forwards;
+}
+@keyframes cardIn {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.guest-card:hover { transform: translateY(-2px); }
+
+.guest-avatar {
+  width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--rosa-light), var(--dorado-light));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; color: var(--rosa-dark); font-weight: 500;
+}
+.guest-info { flex: 1; min-width: 0; }
+.guest-name { font-weight: 700; font-size: 14px; color: var(--text); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.guest-meta { font-size: 12px; color: var(--text-light); display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+.guest-meta span { display: flex; align-items: center; gap: 4px; }
+
+.guest-badge {
+  flex-shrink: 0; padding: 4px 12px;
+  border-radius: 100px; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.badge-si  { background: var(--verde-bg); color: var(--verde); }
+.badge-no  { background: var(--rojo-bg);  color: var(--rojo); }
+
+.empty-state {
+  text-align: center; padding: 48px 24px;
+  color: var(--text-light);
+}
+.empty-state i { font-size: 40px; display: block; margin-bottom: 16px; opacity: 0.3; }
+.empty-state p { font-size: 14px; }
+
+/* ═══════════════════════════════════════════
+   SECCIÓN: LIBRO DE FIRMAS
+   ═══════════════════════════════════════════ */
+.firmas-list { display: flex; flex-direction: column; gap: 14px; }
+
+.firma-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 22px 20px;
+  box-shadow: var(--shadow); position: relative;
+  overflow: hidden;
+  animation: cardIn 0.4s ease forwards;
+}
+.firma-card::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: linear-gradient(to bottom, var(--rosa), var(--dorado));
+}
+
+.firma-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+}
+.firma-avatar {
+  width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--rosa-light), var(--dorado-light));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 19px; color: var(--rosa-dark);
+}
+.firma-meta { flex: 1; }
+.firma-name { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--text); display: block; }
+.firma-rel  { font-size: 11px; color: var(--text-light); }
+.firma-time { font-size: 10px; color: var(--text-light); white-space: nowrap; }
+.firma-msg  { font-size: 14px; color: var(--text-mid); line-height: 1.75; }
+
+/* Cita decorativa */
+.firma-quote-mark {
+  font-family: 'Playfair Display', serif;
+  font-size: 64px; color: var(--rosa-light);
+  line-height: 0.5; float: left;
+  margin-right: 4px; margin-top: 12px;
+}
+
+/* ═══════════════════════════════════════════
+   LOADING SKELETON
+   ═══════════════════════════════════════════ */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-light) 25%, var(--bg) 50%, var(--bg-light) 75%);
+  background-size: 200% 100%;
+  animation: skeleton 1.5s infinite;
+  border-radius: 8px;
+}
+@keyframes skeleton {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skel-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px; display: flex; gap: 12px;
+  box-shadow: var(--shadow); margin-bottom: 10px;
+}
+.skel-avatar { width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0; }
+.skel-lines  { flex: 1; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+.skel-line   { height: 12px; border-radius: 6px; }
+
+/* ═══════════════════════════════════════════
+   BOTÓN REFRESH MANUAL
+   ═══════════════════════════════════════════ */
+.refresh-btn {
+  position: fixed; bottom: 24px; right: 20px; z-index: 500;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--rosa-dark), var(--dorado));
+  border: none; color: white; font-size: 18px;
+  cursor: pointer; box-shadow: 0 4px 20px rgba(176,136,120,0.4);
+  transition: var(--transition); display: flex;
+  align-items: center; justify-content: center;
+}
+.refresh-btn:hover { transform: scale(1.1) rotate(30deg); }
+.refresh-btn.spinning i { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════════
+   SECTION HEADER
+   ═══════════════════════════════════════════ */
+.sec-header {
+  margin-bottom: 20px;
+}
+.sec-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--rosa); margin-bottom: 4px;
+}
+.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-weight: 400; color: var(--text);
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+@media (min-width: 480px) {
+  .stats-grid { grid-template-columns: repeat(2,1fr); }
+  .panel-section { padding: 28px 24px; }
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--rosa-light); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     PANTALLA DE CONTRASEÑA
+     ═══════════════════════════════════ -->
+<div id="lock-screen">
+  <div class="lock-card">
+    <div class="lock-icon"><i class="fas fa-crown"></i></div>
+    <h1 class="lock-name">Valentina</h1>
+    <p class="lock-sub">Panel privado · XV Años</p>
+
+    <label class="lock-label" for="pwd-input">Contraseña</label>
+    <!-- ✏️ EDITAR: La contraseña se configura en el JS abajo -->
+    <input
+      type="password"
+      id="pwd-input"
+      class="lock-input"
+      placeholder="••••••"
+      maxlength="20"
+      autocomplete="off"
+    />
+    <button class="lock-btn" id="pwd-btn">
+      <i class="fas fa-unlock-alt"></i> &nbsp;Entrar
+    </button>
+    <p class="lock-error" id="lock-error"></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PANEL PRINCIPAL
+     ═══════════════════════════════════ -->
+<div id="panel">
+
+  <!-- Header -->
+  <div class="panel-header">
+    <span class="panel-header-ornament">✦ &nbsp; ✦ &nbsp; ✦</span>
+    <h1 class="panel-title">Tu noche, Valentina</h1>
+    <p class="panel-subtitle">Panel en vivo · XV Años</p>
+    <div class="status-bar">
+      <div class="status-dot"></div>
+      <span class="status-text">En vivo &nbsp;·&nbsp; <span id="last-update">actualizando...</span></span>
+    </div>
+  </div>
+
+  <!-- Navegación -->
+  <nav class="panel-nav">
+    <button class="nav-tab active" data-tab="counter">
+      <i class="fas fa-chart-pie"></i>
+      Contador
+    </button>
+    <button class="nav-tab" data-tab="guests">
+      <i class="fas fa-users"></i>
+      Invitados
+    </button>
+    <button class="nav-tab" data-tab="firmas">
+      <i class="fas fa-feather"></i>
+      Firmas
+    </button>
+  </nav>
+
+  <!-- ── SECCIÓN: CONTADOR ── -->
+  <section id="tab-counter" class="panel-section active">
+    <div class="sec-header">
+      <p class="sec-label">— En tiempo real —</p>
+      <h2 class="sec-title">¿Quién viene a tu fiesta?</h2>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card verde">
+        <span class="stat-icon">✅</span>
+        <span class="stat-num" id="stat-si">—</span>
+        <span class="stat-label">Confirmaron</span>
+      </div>
+      <div class="stat-card rojo">
+        <span class="stat-icon">❌</span>
+        <span class="stat-num" id="stat-no">—</span>
+        <span class="stat-label">No pueden ir</span>
+      </div>
+      <div class="stat-card dorado full">
+        <span class="stat-icon">👥</span>
+        <span class="stat-num" id="stat-personas">—</span>
+        <span class="stat-label">Personas en total</span>
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap" style="margin-bottom:20px">
+      <div class="progress-label">
+        <span>Confirmados</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <div class="sec-header" style="margin-top:28px">
+      <p class="sec-label">— Preferencias de menú —</p>
+      <h2 class="sec-title">¿Qué comen?</h2>
+    </div>
+    <div class="menus-grid">
+      <div class="menu-chip">
+        <span class="icon">🍽️</span>
+        <span class="num" id="menu-general">—</span>
+        <span class="lbl">General</span>
+      </div>
+      <div class="menu-chip">
+        <span class="icon">🌿</span>
+        <span class="num" id="menu-veggie">—</span>
+        <span class="lbl">Vegetariano</span>
+      </div>
+      <div class="menu-chip">
+        <span class="icon">🌱</span>
+        <span class="num" id="menu-vegan">—</span>
+        <span class="lbl">Vegano</span>
+      </div>
+      <div class="menu-chip">
+        <span class="icon">🌾</span>
+        <span class="num" id="menu-celiac">—</span>
+        <span class="lbl">Sin gluten</span>
+      </div>
+      <div class="menu-chip" style="grid-column:2/4">
+        <span class="icon">💬</span>
+        <span class="num" id="stat-mensajes">—</span>
+        <span class="lbl">Mensajes en el libro</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECCIÓN: INVITADOS ── -->
+  <section id="tab-guests" class="panel-section">
+    <div class="sec-header">
+      <p class="sec-label">— Tu lista —</p>
+      <h2 class="sec-title">Tus invitados</h2>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="todos">Todos</button>
+      <button class="filter-btn" data-filter="si">✅ Van</button>
+      <button class="filter-btn" data-filter="no">❌ No van</button>
+    </div>
+
+    <div id="guests-list" class="guests-list">
+      <!-- Skeletons de carga -->
+      <div class="skel-card"><div class="skel-avatar skeleton"></div><div class="skel-lines"><div class="skel-line skeleton" style="width:60%"></div><div class="skel-line skeleton" style="width:40%"></div></div></div>
+      <div class="skel-card"><div class="skel-avatar skeleton"></div><div class="skel-lines"><div class="skel-line skeleton" style="width:75%"></div><div class="skel-line skeleton" style="width:35%"></div></div></div>
+      <div class="skel-card"><div class="skel-avatar skeleton"></div><div class="skel-lines"><div class="skel-line skeleton" style="width:55%"></div><div class="skel-line skeleton" style="width:50%"></div></div></div>
+    </div>
+  </section>
+
+  <!-- ── SECCIÓN: LIBRO DE FIRMAS ── -->
+  <section id="tab-firmas" class="panel-section">
+    <div class="sec-header">
+      <p class="sec-label">— Con amor —</p>
+      <h2 class="sec-title">Lo que te escribieron</h2>
+    </div>
+    <div id="firmas-list" class="firmas-list">
+      <div class="skel-card"><div class="skel-avatar skeleton"></div><div class="skel-lines"><div class="skel-line skeleton" style="width:60%"></div><div class="skel-line skeleton" style="width:90%"></div><div class="skel-line skeleton" style="width:70%"></div></div></div>
+      <div class="skel-card"><div class="skel-avatar skeleton"></div><div class="skel-lines"><div class="skel-line skeleton" style="width:50%"></div><div class="skel-line skeleton" style="width:85%"></div><div class="skel-line skeleton" style="width:60%"></div></div></div>
+    </div>
+  </section>
+
+</div><!-- /#panel -->
+
+<!-- Botón refresh -->
+<button class="refresh-btn" id="refresh-btn" title="Actualizar">
+  <i class="fas fa-rotate-right"></i>
+</button>
+
+<script>
+/* ═══════════════════════════════════════════
+   ✏️ CONFIGURACIÓN — EDITAR AQUÍ
+   ═══════════════════════════════════════════ */
+const PANEL_CONFIG = {
+  // ✏️ Contraseña de acceso al panel
+  password: 'valen2025',
+
+  // ✏️ URL pública del Google Sheets en formato JSON
+  // Cómo obtenerla:
+  //   1. Abrí tu Google Sheet
+  //   2. Archivo → Compartir → Cualquier persona con el enlace (solo lectura)
+  //   3. Copiá el ID del sheet (el número largo en la URL)
+  //   4. Pegalo acá abajo reemplazando TU_SHEET_ID
+  sheetId: 'TU_SHEET_ID_AQUÍ',
+
+  // Nombres exactos de las hojas en tu planilla
+  sheetRSVP:    '📋 Respuestas',  // Hoja de confirmaciones
+  sheetFirmas:  '📝 Firmas',      // Hoja de libro de firmas
+
+  // Cada cuántos segundos se refresca automáticamente
+  refreshInterval: 30,
+};
+
+/* ═══════════════════════════════════════════
+   ESTADO GLOBAL
+   ═══════════════════════════════════════════ */
+let allGuests   = [];
+let allFirmas   = [];
+let currentFilter = 'todos';
+let refreshTimer  = null;
+
+/* ═══════════════════════════════════════════
+   PANTALLA DE CONTRASEÑA
+   ═══════════════════════════════════════════ */
+function initLock() {
+  const input  = document.getElementById('pwd-input');
+  const btn    = document.getElementById('pwd-btn');
+  const errEl  = document.getElementById('lock-error');
+
+  function tryUnlock() {
+    const val = input.value.trim();
+    if (val === PANEL_CONFIG.password) {
+      document.getElementById('lock-screen').classList.add('hidden');
+      document.getElementById('panel').classList.add('visible');
+      document.getElementById('refresh-btn').style.display = 'flex';
+      startPanel();
+    } else {
+      errEl.textContent = '⚠️  Contraseña incorrecta. Intentá de nuevo.';
+      input.value = '';
+      input.focus();
+      // Re-trigger animation
+      errEl.style.animation = 'none';
+      void errEl.offsetWidth;
+      errEl.style.animation = '';
+    }
+  }
+
+  btn.addEventListener('click', tryUnlock);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
+}
+
+/* ═══════════════════════════════════════════
+   NAVEGACIÓN POR TABS
+   ═══════════════════════════════════════════ */
+function initTabs() {
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════
+   FILTROS DE INVITADOS
+   ═══════════════════════════════════════════ */
+function initFilters() {
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderGuests();
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════
+   FETCH DE DATOS DESDE GOOGLE SHEETS
+   ═══════════════════════════════════════════ */
+async function fetchSheetData(sheetName) {
+  const id  = PANEL_CONFIG.sheetId;
+
+  // Si no está configurado, devolver datos de demo
+  if (!id || id.includes('TU_SHEET_ID')) {
+    return getDemoData(sheetName);
+  }
+
+  const encodedName = encodeURIComponent(sheetName);
+  const url = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodedName}`;
+
+  try {
+    const res  = await fetch(url);
+    const text = await res.text();
+    // Google devuelve JSONP, hay que limpiar el wrapper
+    const json = JSON.parse(text.substring(47).slice(0, -2));
+    return parseGvizResponse(json, sheetName);
+  } catch (err) {
+    console.warn('Error cargando Sheet:', err);
+    return getDemoData(sheetName);
+  }
+}
+
+function parseGvizResponse(json, sheetName) {
+  const rows = json.table?.rows || [];
+  if (sheetName === PANEL_CONFIG.sheetRSVP) {
+    // Columnas: [fecha, nombre, asistencia, personas, preferencia, mensaje, dispositivo, orden]
+    return rows.slice(1).map(row => ({  // slice(1) salta el header
+      fecha:      row.c[0]?.v || '',
+      nombre:     row.c[1]?.v || '',
+      asistencia: row.c[2]?.v || '',
+      personas:   parseInt(row.c[3]?.v) || 0,
+      menu:       row.c[4]?.v || 'General',
+      mensaje:    row.c[5]?.v || '',
+    })).filter(r => r.nombre);
+  } else {
+    // Columnas firmas: [fecha, nombre, relacion, mensaje]
+    return rows.slice(1).map(row => ({
+      fecha:    row.c[0]?.v || '',
+      nombre:   row.c[1]?.v || '',
+      relacion: row.c[2]?.v || '',
+      mensaje:  row.c[3]?.v || '',
+    })).filter(r => r.nombre);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   DATOS DE DEMO (cuando no hay Sheet configurado)
+   ═══════════════════════════════════════════ */
+function getDemoData(sheetName) {
+  if (sheetName === PANEL_CONFIG.sheetRSVP) {
+    return [
+      { nombre:'María García',    asistencia:'Sí', personas:2, menu:'Menú general',  mensaje:'¡No me lo pierdo!' },
+      { nombre:'Carlos López',    asistencia:'No', personas:0, menu:'-',             mensaje:'Qué pena...' },
+      { nombre:'Ana Martínez',    asistencia:'Sí', personas:3, menu:'Vegetariano',   mensaje:'Las tres vamos! 💗' },
+      { nombre:'Lucía Fernández', asistencia:'Sí', personas:1, menu:'Vegano',        mensaje:'¡Te quiero mucho!' },
+      { nombre:'Sofía Ramírez',   asistencia:'Sí', personas:2, menu:'Menú general',  mensaje:'Reservé el outfit hace meses 😂' },
+      { nombre:'Pedro Gómez',     asistencia:'No', personas:0, menu:'-',             mensaje:'Mandame fotos!' },
+      { nombre:'Laura Díaz',      asistencia:'Sí', personas:4, menu:'Sin gluten',    mensaje:'Toda la familia va 🎉' },
+    ];
+  } else {
+    return [
+      { nombre:'Mamá', relacion:'Familiar', mensaje:'Mi amor, verte crecer es el regalo más grande de mi vida. ¡Te amo infinito! 💗' },
+      { nombre:'Papá', relacion:'Familiar', mensaje:'Hija, que esta noche sea el comienzo de todos tus sueños cumplidos. 👑' },
+      { nombre:'Caro', relacion:'Amiga de la escuela', mensaje:'¡15 años bailando juntas y lo que nos queda! ¡Te re quiero! 💃✨' },
+      { nombre:'Abu Elsa', relacion:'Familiar', mensaje:'Que Dios te bendiga siempre, mi cielo. Sos la luz de esta familia. 🌸' },
+    ];
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RENDERIZADO — CONTADOR
+   ═══════════════════════════════════════════ */
+function renderCounter() {
+  const si       = allGuests.filter(g => g.asistencia === 'Sí');
+  const no       = allGuests.filter(g => g.asistencia === 'No');
+  const total    = si.reduce((acc, g) => acc + (g.personas || 0), 0);
+  const totalAll = si.length + no.length;
+
+  animateNumber('stat-si',       si.length);
+  animateNumber('stat-no',       no.length);
+  animateNumber('stat-personas', total);
+  animateNumber('stat-mensajes', allFirmas.length);
+
+  // Progress bar
+  const pct = totalAll > 0 ? Math.round((si.length / totalAll) * 100) : 0;
+  document.getElementById('progress-pct').textContent  = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  // Menús
+  const countMenu = (term) => si.filter(g => (g.menu || '').toLowerCase().includes(term)).length;
+  const general = si.filter(g => {
+    const m = (g.menu || '').toLowerCase();
+    return m.includes('general') || m === '-' || m === '';
+  }).length;
+
+  animateNumber('menu-general', general);
+  animateNumber('menu-veggie',  countMenu('vegetariano'));
+  animateNumber('menu-vegan',   countMenu('vegano'));
+  animateNumber('menu-celiac',  countMenu('gluten') + countMenu('celíaco') + countMenu('celiaco'));
+}
+
+function animateNumber(id, target) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = parseInt(el.textContent) || 0;
+  if (start === target) return;
+  const duration = 600;
+  const startTime = performance.now();
+  function update(now) {
+    const pct = Math.min((now - startTime) / duration, 1);
+    const ease = 1 - Math.pow(1 - pct, 3);
+    el.textContent = Math.round(start + (target - start) * ease);
+    if (pct < 1) requestAnimationFrame(update);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(update);
+}
+
+/* ═══════════════════════════════════════════
+   RENDERIZADO — INVITADOS
+   ═══════════════════════════════════════════ */
+function renderGuests() {
+  const list = document.getElementById('guests-list');
+  const filtered = currentFilter === 'todos' ? allGuests
+    : allGuests.filter(g => {
+        if (currentFilter === 'si') return g.asistencia === 'Sí';
+        if (currentFilter === 'no') return g.asistencia === 'No';
+        return true;
+      });
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><i class="fas fa-user-clock"></i><p>Aún no hay respuestas en esta categoría.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map((g, i) => {
+    const initial = (g.nombre || '?').charAt(0).toUpperCase();
+    const esSi    = g.asistencia === 'Sí';
+    const menuIcon = g.menu?.toLowerCase().includes('vegano') ? '🌱'
+                   : g.menu?.toLowerCase().includes('vegetariano') ? '🌿'
+                   : g.menu?.toLowerCase().includes('gluten') || g.menu?.toLowerCase().includes('celí') ? '🌾'
+                   : '🍽️';
+    return `
+      <div class="guest-card" style="animation-delay:${i*40}ms">
+        <div class="guest-avatar">${initial}</div>
+        <div class="guest-info">
+          <span class="guest-name">${escHtml(g.nombre)}</span>
+          <div class="guest-meta">
+            ${esSi ? `<span><i class="fas fa-users" style="color:var(--rosa)"></i> ${g.personas || 1} persona${(g.personas||1) > 1 ? 's':''}</span>` : ''}
+            ${esSi ? `<span>${menuIcon} ${escHtml(g.menu || 'General')}</span>` : ''}
+          </div>
+        </div>
+        <span class="guest-badge ${esSi ? 'badge-si':'badge-no'}">${esSi ? '✅ Va':'❌ No va'}</span>
+      </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════
+   RENDERIZADO — LIBRO DE FIRMAS
+   ═══════════════════════════════════════════ */
+function renderFirmas() {
+  const list = document.getElementById('firmas-list');
+
+  if (allFirmas.length === 0) {
+    list.innerHTML = `<div class="empty-state"><i class="fas fa-feather"></i><p>Aún no hay mensajes en el libro de firmas.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = [...allFirmas].reverse().map((f, i) => {
+    const initial = (f.nombre || '?').charAt(0).toUpperCase();
+    return `
+      <div class="firma-card" style="animation-delay:${i*50}ms">
+        <div class="firma-header">
+          <div class="firma-avatar">${initial}</div>
+          <div class="firma-meta">
+            <span class="firma-name">${escHtml(f.nombre)}</span>
+            <span class="firma-rel">${escHtml(f.relacion || '')}</span>
+          </div>
+        </div>
+        <p class="firma-msg">
+          <span class="firma-quote-mark">"</span>${escHtml(f.mensaje)}
+        </p>
+      </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════
+   ACTUALIZACIÓN DE DATOS
+   ═══════════════════════════════════════════ */
+async function refreshData() {
+  const btn = document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+
+  try {
+    const [guests, firmas] = await Promise.all([
+      fetchSheetData(PANEL_CONFIG.sheetRSVP),
+      fetchSheetData(PANEL_CONFIG.sheetFirmas),
+    ]);
+
+    allGuests = guests;
+    allFirmas = firmas;
+
+    renderCounter();
+    renderGuests();
+    renderFirmas();
+
+    const now = new Date();
+    document.getElementById('last-update').textContent =
+      `Actualizado ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+
+  } catch (err) {
+    console.warn('Error al actualizar:', err);
+  } finally {
+    btn.classList.remove('spinning');
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ARRANQUE DEL PANEL
+   ═══════════════════════════════════════════ */
+function startPanel() {
+  initTabs();
+  initFilters();
+
+  // Botón refresh manual
+  document.getElementById('refresh-btn').addEventListener('click', refreshData);
+
+  // Primera carga
+  refreshData();
+
+  // Auto-refresh cada N segundos
+  clearInterval(refreshTimer);
+  refreshTimer = setInterval(refreshData, PANEL_CONFIG.refreshInterval * 1000);
+}
+
+/* ═══════════════════════════════════════════
+   UTILIDADES
+   ═══════════════════════════════════════════ */
+function escHtml(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  initLock();
+  // El panel arranca solo después de ingresar la contraseña
+});
+</script>
+</body>
+</html>
